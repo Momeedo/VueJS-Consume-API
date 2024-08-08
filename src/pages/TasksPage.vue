@@ -9,10 +9,18 @@
                             placeholder="+ Add new task. Press enter to save." />
                     </div>
                     <!-- List of uncompleted tasks -->
-                    <Tasks :tasks="uncompletedTasks" />
+                    <Tasks :tasks="uncompletedTasks"/>
+
+                    <div class="text-center my-3" v-show="showToggleCompletedBtn">
+                        <button class="btn btn-sm btn-primary"
+                            @click="$event => showCompletedTasks = !showCompletedTasks">
+                            <span v-if="!showCompletedTasks">Show Completed Tasks</span>
+                            <span v-else>Hide Completed Tasks</span>
+                        </button>
+                    </div>
 
                     <!-- List of completed tasks -->
-                    <Tasks :tasks="completedTasks" />
+                    <Tasks :tasks="completedTasks" :show="completedTasksIsVisible && showCompletedTasks"/>
 
                 </div>
             </div>
@@ -34,5 +42,9 @@ onMounted(async () => {
 
 const uncompletedTasks = computed(() => tasks.value.filter(task => !task.is_completed))
 const completedTasks = computed(() => tasks.value.filter(task => task.is_completed))
-
+const showToggleCompletedBtn =
+    computed(() => uncompletedTasks.value.length > 0 && completedTasks.value.length > 0)
+const completedTasksIsVisible =
+    computed(() => uncompletedTasks.value.length === 0 || completedTasks.value.length > 0)
+const showCompletedTasks = ref(false)
 </script>
