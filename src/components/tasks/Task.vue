@@ -3,12 +3,14 @@
         <div class="d-flex justify-content-start align-items-center">
             <input class="form-check-input mt-0" :class="completedClass" type="checkbox" :checked="task.is_completed" />
             <div class="ms-2 flex-grow-1" :class="completedClass" 
-            @dblclick="$event => isEdit = true"
+            @dblclick="doubleClickHandler"
             title="Double click the text to edit or remove">
                 <div class="relative" v-if="isEdit">
                         <input class="editable-task" 
-                        type="text" 
+                        type="text"
+                        :value="task.title" 
                         v-focus
+                        @keyup.enter="updateTask"
                         @keyup.esc="$event => isEdit = false"/>
                 </div>
                 <span v-else>{{ task.title }}</span>
@@ -24,13 +26,26 @@
 import { computed, ref } from 'vue';
 import TaskActions from './TaskActions.vue';
 
+
 const props = defineProps({
     task: Object
 })
+const emit = defineEmits(['updated'])
+
 const isEdit = ref(false)
 const completedClass = computed(() => props.task.is_completed ? "completed" : "")
 
 const vFocus = {
     mounted: (el) => el.focus()
+}
+
+const doubleClickHandler = (event) => {
+    isEdit.value = true
+}
+
+const updateTask = (event) => {
+    const updatedTask = { ...props.task, title: event.target.value }
+    isEdit.value = false
+    emit('updated', updatedTask)
 }
 </script>
