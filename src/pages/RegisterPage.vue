@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <main style="min-height: 50vh; margin-top: 2rem">
         <h1>Register</h1>
-    </div>
+    </main>
 </template>
