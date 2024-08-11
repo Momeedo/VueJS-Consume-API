@@ -27,8 +27,19 @@
                     <li class="nav-item" v-if="!store.isLoggedIn">
                         <RouterLink to="/register" class="btn btn-danger ms-2">Register</RouterLink>
                     </li>
-                    <li class="nav-item" v-if="store.isLoggedIn">
-                        <a class="btn btn-outline-secondary ms-2" @click.prevent="logout">Logout</a>
+
+                    <li class="nav-item dropdown" v-if="store.isLoggedIn">
+                        <a class="nav-link dropdown-toggle" :class="toggleClass" @click.prevent="toggle" href="#"
+                            id="navbarDropdown"  role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            {{ store.user.name }}
+                        </a>
+                        <div class="dropdown-menu" :class="toggleClass" aria-labelledby="navbarDropdown">
+                            <!-- <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div> -->
+                            <a class="dropdown-item" @click.prevent="logout">Logout</a>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -40,14 +51,21 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import { ref, computed } from "vue"
 
 const store = useAuthStore()
 const router = useRouter()
+const navIsOpen = ref(false)
 
 const logout = async () => {
     await store.handleLogout()
+    navIsOpen.value = false
     router.push({ name: 'login' })
 }
+
+const toggle = () => navIsOpen.value = !navIsOpen.value
+
+const toggleClass = computed(() => navIsOpen.value === true ? 'show' : '')
 
 
 </script>
