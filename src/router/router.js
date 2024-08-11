@@ -4,6 +4,7 @@ import LoginPage from "../pages/LoginPage.vue";
 import SummaryPage from "@/pages/SummaryPage.vue";
 import NotFound from "@/pages/errors/NotFound.vue";
 import HomePage from "@/pages/HomePage.vue";
+import { useAuthStore } from "../stores/auth";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -16,19 +17,25 @@ const routes = [
     path: "/tasks",
     component: TasksPage,
     name: "tasks",
-    // meta: {
-    //   auth: true,
-    // },
+    meta: {
+      auth: true,
+    },
   },
   {
     path: "/login",
     component: LoginPage,
     name: "login",
+    meta: {
+      guest: true,
+    },
   },
   {
     path: "/register",
     component: RegisterPage,
     name: "register",
+    meta: {
+      guest: true,
+    },
   },
   {
     path: "/summary",
@@ -51,14 +58,18 @@ const router = createRouter({
   linkActiveClass: "active",
 });
 
-router.beforeEach((to, from) => {
-  if (to.meta.auth) {
+router.beforeEach(async (to, from) => {
+  const store = useAuthStore();
+  await store.fetchUser();
+  if (to.meta.auth && !store.isLoggedIn) {
     return {
       name: "login",
       query: {
         redirect: to.fullPath,
       },
     };
+  } else if (to.meta.guest && store.isLoggedIn) {
+    return { name: "tasks" };
   }
 });
 
